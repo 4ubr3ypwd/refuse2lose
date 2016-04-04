@@ -26,7 +26,7 @@ if ( ! class_exists( 'Refuse2Lose_CPT' ) ) {
 		 * @since 1.0.0
 		 */
 		public function cpt() {
-			register_post_type( 'cm_list', array(
+			register_post_type( 'refuse2lose', array(
 				'labels'             => array(
 					'name'               => _x( 'Records', 'post type general name', 'refuse2lose' ),
 					'singular_name'      => _x( 'Record', 'post type singular name', 'refuse2lose' ),

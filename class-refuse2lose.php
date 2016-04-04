@@ -12,9 +12,10 @@ if ( ! defined ( 'ABSPATH' ) ) {
  */
 function refuse2lose_autoload( $class ) {
 	$prefix = strtolower( str_replace( '_', '-', $class ) );
-	$file   = "class-{$prefix}.php";
+	$dir    = trailingslashit( dirname( __FILE__ ) );
+	$file   = "{$dir}/class-{$prefix}.php";
 
-	if ( __FILE__ != $file ) {
+	if ( basename( __FILE__ ) != $file && file_exists( $file ) ) {
 		require_once( $file ); // Include the class.
 	}
 }
@@ -37,7 +38,9 @@ if ( ! class_exists( 'Refuse2Lose' ) ) {
 			$this->vendor(); // Libraries and cool things.
 
 			// Features.
-			new Refuse2Lose_CPT(); // CPT.
+			$cpt = new Refuse2Lose_CPT(); // CPT.
+			$users = new Refuse2Lose_Users(); // Users.
+			$fields = new Refuse2Lose_Fields( $users->get_members() ); // All the fields (cmb2).
 		}
 
 		/**
