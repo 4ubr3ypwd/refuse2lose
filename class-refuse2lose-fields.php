@@ -59,6 +59,9 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		private function fields() {
 			$none = array( '' => __( 'None', 'refuse2lose' ), );
 
+			// Required.
+			$required = array( 'required' => 'required' );
+
 			// Can someone beat a non member?
 			$non_member_option = $this->can_beat_non_members
 
@@ -68,7 +71,8 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 				// Don't allow someone else.
 				: array();
 
-			return array(
+			// The fields.
+			return apply_filters( 'refuse2lose_fields', array(
 				// Who are you?
 				array(
 					'name'            => __( 'Who Are You', 'cmb2' ),
@@ -77,15 +81,18 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 					'type'            => 'select',
 
 					// Choose a member.
-					'options'         =>	array_merge( $none, $this->members ),
+					'options'         => empty( $this->members) ? $none : $this->members ,
 
 					// Sanitization.
 					'sanitization_cb' => array( $this, 'basic_sanitize' ),
+
+					// Attributes
+					'attributes'      => $required,
 				),
 
 				// Who did you beat?
 				array(
-					'name'            => __( 'Who did you beat?', 'cmb2' ),
+					'name'            => __( 'Won against', 'cmb2' ),
 					'desc'            => $this->can_beat_non_members ? __( 'Choose a member or select if you beat a non-member.', 'cmb2' ) : __( 'Choose a member you beat.', 'cmb2' ),
 					'id'              => '_who_did_you_beat',
 					'type'            => 'radio',
@@ -95,8 +102,39 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 
 					// Sanitization.
 					'sanitization_cb' => array( $this, 'basic_sanitize' ),
+
+					// Attributes
+					'attributes'      => $required,
 				),
-			);
+
+				// Where did you play?
+				array(
+					'name'            => __( 'Where', 'cmb2' ),
+					'desc'            => __( 'Where did you win this match?', 'refuse2lose' ),
+					'id'              => '_where_did_you_win',
+					'type'            => 'text',
+
+					// Sanitization.
+					'sanitization_cb' => array( $this, 'basic_sanitize' ),
+
+					// Attributes
+					'attributes'      => $required,
+				),
+
+				// Where did you play?
+				array(
+					'name'            => __( 'Score', 'cmb2' ),
+					'desc'            => __( 'What was your score?', 'refuse2lose' ),
+					'id'              => '_score',
+					'type'            => 'text',
+
+					// Sanitization.
+					'sanitization_cb' => array( $this, 'basic_sanitize' ),
+
+					// Attributes
+					'attributes'      => $required,
+				),
+			) );
 		}
 
 		/**
