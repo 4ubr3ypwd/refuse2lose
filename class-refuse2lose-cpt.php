@@ -70,6 +70,14 @@ if ( ! class_exists( 'Refuse2Lose_CPT' ) ) {
 				flush_rewrite_rules();
 				update_option( 'flush_refuse2lose_cpt', $code );
 			}
+
+			// Simplify the UI.
+			new Refuse2Lose_Simple_CPT_UI( array(
+				'post_type'            => 'refuse2lose',
+				'remove_slugs'         => true, // Remove edit slug UI.
+				'remove_known_plugins' => true, // Remove some known plugins.
+				'remove_yoast_metabox' => true, // Remove Yoast Metabox
+			) );
 		}
 	} // Refuse2Lose_CPT
 }

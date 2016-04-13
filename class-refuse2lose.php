@@ -35,12 +35,12 @@ if ( ! class_exists( 'Refuse2Lose' ) ) {
 		 * @since  1.0.0
 		 */
 		function __construct() {
-			$this->vendor(); // Libraries and cool things.
+			$this->_require(); // Libraries and cool things.
 
 			// Features.
-			$cpt = new Refuse2Lose_CPT(); // CPT.
-			$users = new Refuse2Lose_Users(); // Users.
-			$fields = new Refuse2Lose_Fields( $users->get_members() ); // All the fields (cmb2).
+			$cpt    = new Refuse2Lose_CPT(); // CPT.
+			$users  = new Refuse2Lose_Users(); // Users.
+			$fields = new Refuse2Lose_Fields( $users->get_members_list() ); // All the fields (cmb2).
 		}
 
 		/**
@@ -48,9 +48,10 @@ if ( ! class_exists( 'Refuse2Lose' ) ) {
 		 *
 		 * @since 1.0.0
 		 */
-		private function vendor() {
+		private function _require() {
 			foreach ( array(
 				'vendor/cmb2/init.php', // CMB2.
+				'class-refuse2lose-simple-cpt-ui.php', // Simple CPT UI.
 			) as $include ) {
 				require_once( $include );
 			}

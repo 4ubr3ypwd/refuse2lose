@@ -44,6 +44,8 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		 * @return array Fields.
 		 */
 		private function fields() {
+			$none = array( '' => __( 'None', 'refuse2lose' ), );
+
 			return array(
 				array(
 					'name'            => __( 'Who Are You', 'cmb2' ),
@@ -52,7 +54,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 					'type'            => 'select',
 
 					// Choose a member.
-					'options'         =>	$this->members,
+					'options'         =>	array_merge( $none, $this->members ),
 
 					// Sanitization.
 					'sanitization_cb' => array( $this, 'sanitize' ),
@@ -61,8 +63,15 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 			);
 		}
 
+		/**
+		 * Basic sanitization.
+		 *
+		 * @since  1.0.0
+		 * @param  string $field The field value.
+		 * @return string        The field sanitized.
+		 */
 		public function sanitize( $field ) {
-			return $field;
+			return esc_html( $field );
 		}
 
 		/**
