@@ -28,12 +28,25 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		private $members;
 
 		/**
+		 * Allow users to record that they beat someone outside the ladder?
+		 *
+		 * @since  1.0.0
+		 * @var boolean
+		 */
+		private $allow_others_beat = true;
+
+		/**
 		 * Construct
 		 *
 		 * @since  1.0.0
 		 */
 		function __construct( $members ) {
-			$this->members = $members;
+			$this->members = $members; // Store the members.
+
+			// Change if we allow users to beat non-members.
+			$this->can_beat_non_members = apply_filters( 'refuse2lose/can_beat_non_members', true );
+
+			// Add fields to admin.
 			add_action( 'cmb2_admin_init', array( $this, 'cmb2' ) );
 		}
 
@@ -46,7 +59,17 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		private function fields() {
 			$none = array( '' => __( 'None', 'refuse2lose' ), );
 
+			// Can someone beat a non member?
+			$non_member_option = $this->can_beat_non_members
+
+				// Allow someone else.
+				? array( 'non-member' => apply_filters( 'refuse2lose_beat_non_member_text', __( 'A Non-member', 'refuse2lose' ) ), )
+
+				// Don't allow someone else.
+				: array();
+
 			return array(
+				// Who are you?
 				array(
 					'name'            => __( 'Who Are You', 'cmb2' ),
 					'desc'            => __( 'Who is the member that won?', 'cmb2' ),
@@ -57,8 +80,21 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 					'options'         =>	array_merge( $none, $this->members ),
 
 					// Sanitization.
-					'sanitization_cb' => array( $this, 'sanitize' ),
-					// 'escape_cb'       => 'my_custom_escaping',  // custom escaping callback parameter
+					'sanitization_cb' => array( $this, 'basic_sanitize' ),
+				),
+
+				// Who did you beat?
+				array(
+					'name'            => __( 'Who did you beat?', 'cmb2' ),
+					'desc'            => $this->can_beat_non_members ? __( 'Choose a member or select if you beat a non-member.', 'cmb2' ) : __( 'Choose a member you beat.', 'cmb2' ),
+					'id'              => '_who_did_you_beat',
+					'type'            => 'radio',
+
+					// Choose a member.
+					'options'         =>	array_merge( $this->members, $non_member_option ),
+
+					// Sanitization.
+					'sanitization_cb' => array( $this, 'basic_sanitize' ),
 				),
 			);
 		}
@@ -70,7 +106,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		 * @param  string $field The field value.
 		 * @return string        The field sanitized.
 		 */
-		public function sanitize( $field ) {
+		public function basic_sanitize( $field ) {
 			return esc_html( $field );
 		}
 
