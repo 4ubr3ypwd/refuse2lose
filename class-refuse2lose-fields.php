@@ -74,7 +74,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 			// The fields.
 			return apply_filters( 'refuse2lose_fields', array(
 				// Who are you?
-				array(
+				'_who_are_you' => array(
 					'name'            => __( 'Who Are You', 'cmb2' ),
 					'desc'            => __( 'Who is the member that won?', 'cmb2' ),
 					'id'              => '_who_are_you',
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 				),
 
 				// Who did you beat?
-				array(
+				'_who_did_you_beat' => array(
 					'name'            => __( 'Won against', 'cmb2' ),
 					'desc'            => $this->can_beat_non_members ? __( 'Choose a member or select if you beat a non-member.', 'cmb2' ) : __( 'Choose a member you beat.', 'cmb2' ),
 					'id'              => '_who_did_you_beat',
@@ -99,34 +99,6 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 
 					// Choose a member.
 					'options'         =>	array_merge( $this->members, $non_member_option ),
-
-					// Sanitization.
-					'sanitization_cb' => array( $this, 'basic_sanitize' ),
-
-					// Attributes
-					'attributes'      => $required,
-				),
-
-				// Where did you play?
-				array(
-					'name'            => __( 'Where', 'cmb2' ),
-					'desc'            => __( 'Where did you win this match?', 'refuse2lose' ),
-					'id'              => '_where_did_you_win',
-					'type'            => 'text',
-
-					// Sanitization.
-					'sanitization_cb' => array( $this, 'basic_sanitize' ),
-
-					// Attributes
-					'attributes'      => $required,
-				),
-
-				// Where did you play?
-				array(
-					'name'            => __( 'Score', 'cmb2' ),
-					'desc'            => __( 'What was your score?', 'refuse2lose' ),
-					'id'              => '_score',
-					'type'            => 'text',
 
 					// Sanitization.
 					'sanitization_cb' => array( $this, 'basic_sanitize' ),
