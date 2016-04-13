@@ -25,9 +25,9 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 		}
 
 		public function refuse2lose_fields( $fields ) {
-			$template = $fields['_who_did_you_beat'];
+			$template = $fields['_who_did_you_beat']; // Use this to get the attributes, santization, etc.
 
-			$fields['_where'] = array_merge( $template, array(
+			$fields['_where_did_you_win'] = array_merge( $template, array(
 				'name'            => __( 'Where', 'cmb2' ),
 				'desc'            => __( 'Where, or what facility, did you win your match?', 'refuse2lose' ),
 				'id'              => '_where_did_you_win',
@@ -41,6 +41,18 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 				'type'            => 'text',
 				'attributes'      => array(
 					'placeholder' => '62, 75, 76',
+					'required'    => 'required', // Required.
+				),
+			) );
+
+			$fields['_singles_doubles'] = array_merge( $template, array(
+				'name'            => __( 'Singles or Doubles?', 'cmb2' ),
+				'desc'            => __( 'Did you play singles or doubles? Singles awards double points.', 'refuse2lose' ),
+				'id'              => '_singles_doubles',
+				'type'            => 'select',
+				'options'         => array(
+					'singles'       => __( 'Singles', 'refuse2lose' ),
+					'doubles'       => __( 'Doubles', 'refuse2lose' ),
 				),
 			) );
 
