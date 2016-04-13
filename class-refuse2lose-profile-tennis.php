@@ -24,6 +24,13 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 			}
 		}
 
+		/**
+		 * Fields for Tennis.
+		 *
+		 * @since  1.0.0
+		 * @param  array $fields The current fields.
+		 * @return array         Fields for Tennis.
+		 */
 		public function refuse2lose_fields( $fields ) {
 			$template = $fields['_who_did_you_beat']; // Use this to get the attributes, santization, etc.
 
@@ -56,7 +63,8 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 				),
 			) );
 
-			return $fields;
+			// Go ahead, and even modify our tennis profile.
+			return apply_filters( 'refuse2lose_profile_tennis_fields', $fields );
 		}
 
 		/**
