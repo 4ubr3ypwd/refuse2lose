@@ -77,6 +77,7 @@ if ( ! class_exists( 'Refuse2Lose_CPT' ) ) {
 				'remove_slugs'         => true, // Remove edit slug UI.
 				'remove_known_plugins' => true, // Remove some known plugins.
 				'remove_yoast_metabox' => true, // Remove Yoast Metabox
+				'hide_title'           => true, // Don't edit title.
 			) );
 		}
 	} // Refuse2Lose_CPT

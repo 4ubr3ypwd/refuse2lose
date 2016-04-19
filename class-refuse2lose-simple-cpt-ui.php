@@ -56,6 +56,9 @@ if ( ! class_exists( 'Refuse2Lose_Simple_CPT_UI' ) ) :
 		 *
 		 *    @type boolean	$remove_yoast_metabox Remove Yoast Metabox.
 		 *                                        Default: false.
+		 *
+		 *    @type boolean $hide_title           Remove editing the title.
+		 *                                        Default: false.
 		 * }
 		 */
 		function __construct( $args = array() ) {
@@ -67,6 +70,7 @@ if ( ! class_exists( 'Refuse2Lose_Simple_CPT_UI' ) ) :
 				'remove_slugs'         => false, // Remove edit slug UI.
 				'remove_known_plugins' => false, // Remove some known plugins.
 				'remove_yoast_metabox' => false, // Remove Yoast Metabox
+				'hide_title'           => false, // Hide the title.
 			) );
 
 			if ( ! $this->args['post_type'] ) {
@@ -80,6 +84,11 @@ if ( ! class_exists( 'Refuse2Lose_Simple_CPT_UI' ) ) :
 			if ( $this->args['hide_actions'] ) {
 				add_action( "admin_head-post.php", array( $this, 'hide_actions' ) );
 				add_action( "admin_head-post-new.php", array( $this, 'hide_actions' ) );
+			}
+
+			if ( $this->args['hide_title'] ) {
+				add_action( "admin_head-post.php", array( $this, 'hide_title' ) );
+				add_action( "admin_head-post-new.php", array( $this, 'hide_title' ) );
 			}
 
 			if ( $this->args['remove_yoast_metabox'] )
@@ -123,7 +132,7 @@ if ( ! class_exists( 'Refuse2Lose_Simple_CPT_UI' ) ) :
 		 * @since  1.0.0
 		 */
 		public function remove_edit_slug_ui() {
-			if( $this->args['post_type'] == get_post_type() ) : ?>
+			if ( $this->args['post_type'] == get_post_type() ) : ?>
 				<style>
 					#edit-slug-box { display: none; }
 				</style>
@@ -147,6 +156,24 @@ if ( ! class_exists( 'Refuse2Lose_Simple_CPT_UI' ) ) :
 					</style>
 				';
 			}
+		}
+
+		/**
+		 * Hides the title.
+		 *
+		 * @since  1.0.0
+		 */
+		public function hide_title() {
+			if ( $this->args['post_type'] == get_post_type() ) :
+				?>
+					<!-- Disables editing title -->
+					<script>
+						jQuery( document ).ready( function() {
+							jQuery( 'input[name="post_title"]' ).attr( 'disabled', 'disabled' );
+						} );
+					</script>
+				<?php
+			endif;
 		}
 
 		/**

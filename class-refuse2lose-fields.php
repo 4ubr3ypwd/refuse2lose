@@ -47,7 +47,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 			$this->can_beat_non_members = apply_filters( 'refuse2lose/can_beat_non_members', true );
 
 			// Add fields to admin.
-			add_action( 'cmb2_admin_init', array( $this, 'cmb2' ) );
+			add_action( 'cmb2_init', array( $this, 'cmb2' ) );
 		}
 
 		/**
@@ -92,13 +92,13 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 
 				// Who did you beat?
 				'_who_did_you_beat' => array(
-					'name'            => __( 'Won against', 'cmb2' ),
+					'name'            => __( 'Who lost?', 'cmb2' ),
 					'desc'            => $this->can_beat_non_members ? __( 'Choose a member or select if you beat a non-member.', 'cmb2' ) : __( 'Choose a member you beat.', 'cmb2' ),
 					'id'              => '_who_did_you_beat',
 					'type'            => 'radio',
 
 					// Choose a member.
-					'options'         =>	array_merge( $this->members, $non_member_option ),
+					'options'         => array_merge( $this->members, $non_member_option ),
 
 					// Sanitization.
 					'sanitization_cb' => array( $this, 'basic_sanitize' ),

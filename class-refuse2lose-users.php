@@ -69,7 +69,7 @@ if ( ! class_exists( 'Refuse2Lose_Users' ) ) {
 			) );
 
 			foreach ( $_users as $user ) {
-				$users[] = $user->display_name;
+				$users[ $user->data->ID ] = $user->display_name;
 			}
 
 			return $users;
