@@ -39,6 +39,9 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 				'desc'            => __( 'Where, or what facility, did you win your match?', 'refuse2lose' ),
 				'id'              => '_where_did_you_win',
 				'type'            => 'text',
+				'attributes'      => array(
+					'required'    => 'required', // Required.
+				),
 			) );
 
 			$fields['_score'] = array_merge( $template, array(
@@ -57,10 +60,13 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 				'desc'            => __( 'Did you play singles or doubles? Singles awards double points.', 'refuse2lose' ),
 				'id'              => '_singles_doubles',
 				'type'            => 'select',
+
 				'options'         => array(
 					'singles'       => __( 'Singles', 'refuse2lose' ),
 					'doubles'       => __( 'Doubles', 'refuse2lose' ),
 				),
+
+				'required'    => 'required', // Required.
 			) );
 
 			// Go ahead, and even modify our tennis profile.

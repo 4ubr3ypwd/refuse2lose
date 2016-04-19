@@ -38,19 +38,41 @@ if ( ! class_exists( 'Refuse2Lose_Users' ) ) {
 		 * @return array The list of members.
 		 */
 		public function get_members_list() {
-			$refuse2lose_users = get_users( array(
-				'role'   => 'refuse2lose',
-			) );
+			$users = array(); // No users at beginning.
 
-			foreach ( $refuse2lose_users as $user ) {
-				$users[] = $user->display_name;
+			// Add users of these roles.
+			foreach ( array(
+				// 'administrator',
+				'refuse2lose',
+			) as $role ) {
+				$this->push_display_names_for_role( $role, $users );
 			}
 
-			if ( isset( $users ) ) {
+			if ( is_array( $users ) ) {
 				return $users;
 			}
 
 			return array(); // No users.
+		}
+
+		/**
+		 * Add display name for users for certain role.
+		 *
+		 * @since  1.0.0
+		 * @param  string $role   The role name.
+		 * @param  array &$users  The users array.
+		 * @return array          The users array with users for that role.
+		 */
+		private function push_display_names_for_role( $role, &$users ) {
+			$_users = get_users( array(
+				'role'   => $role,
+			) );
+
+			foreach ( $_users as $user ) {
+				$users[] = $user->display_name;
+			}
+
+			return $users;
 		}
 	} // Refuse2Lose_Users
 }
