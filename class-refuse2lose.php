@@ -43,7 +43,7 @@ if ( ! class_exists( 'Refuse2Lose' ) ) {
 			$settings   = new Refuse2Lose_CMB2_Settings(); // Settings.
 			$tennis     = new Refuse2Lose_Profile_Tennis( $settings->get_profile() ); // Tennis profile.
 			$fields     = new Refuse2Lose_Fields( $users->get_members_list() ); // All the fields (cmb2).
-			$shortcodes = new Refuse2Lose_Shortcodes();
+			$shortcodes = new Refuse2Lose_Shortcodes( $users->get_members_list(), $fields->fields() );
 		}
 
 		/**

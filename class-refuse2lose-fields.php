@@ -56,7 +56,7 @@ if ( ! class_exists( 'Refuse2Lose_Fields' ) ) {
 		 * @since  1.0.0
 		 * @return array Fields.
 		 */
-		private function fields() {
+		public function fields() {
 			$none = array( '' => __( 'None', 'refuse2lose' ), );
 
 			// Required.

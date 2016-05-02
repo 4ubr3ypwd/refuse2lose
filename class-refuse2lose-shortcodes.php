@@ -11,14 +11,199 @@ if ( ! class_exists( 'Refuse2Lose_Shortcodes' ) ) {
 	 * @since  1.0.0
 	 */
 	class Refuse2Lose_Shortcodes {
+
 		/**
-		 * Construct
+		 * The members.
+		 *
+		 * @since  1.0.0
+		 * @var array
+		 */
+		private $members_list = array();
+
+		/**
+		 * The fields.
+		 *
+		 * @since  1.0.0
+		 * @var array
+		 */
+		private $fields = array();
+
+		/**
+		 * Constructor.
 		 *
 		 * @since  1.0.0
 		 */
-		function __construct() {
+		function __construct( $members_list, $fields ) {
+			$this->members_list = $members_list; // Store the members.
+			$this->fields       = $fields; // Store the fields we're using.
+
+			// Adding a record.
 			add_shortcode( 'refuse2lose_add_record', array( $this, 'add_record' ) ); // Add record shortcode.
 			add_action( 'template_redirect', array( $this, 'prepare_new_record' ) ); // Make a new record.
+
+			// Showing the ladder.
+			add_shortcode( 'refuse2lose_ladder', array( $this, 'ladder' ) );
+		}
+
+		/**
+		 * Get the rankings.
+		 *
+		 * @since  1.0.0
+		 *
+		 * @return array Rankings Data; The rankings and ties that will
+		 *               be removed from array_flip() with the same points.
+		 */
+		private function get_rankings() {
+
+			// Go through each user and get the total records.
+			foreach ( $this->members_list as $user_id => $display_name ) {
+
+				// Get the records for this user.
+				$records = get_posts( array(
+					'post_type'      => 'refuse2lose',
+					'post_status'    => 'publish',
+					'fields'         => 'ids',
+					'posts_per_page' => 5000,
+
+					// Only records where the user was selected as the person who won.
+					'meta_query' => array(
+						array(
+							'key'   => '_who_are_you',
+							'value' => $user_id,
+						),
+					),
+				) );
+
+				foreach ( $records as $record_id ) {
+					foreach ( $this->fields as $field ) {
+						if ( isset( $field['points'] ) ) {
+
+							// For each field value as points.
+							foreach ( $field['points'] as $value => $points ) {
+								$option_value = get_post_meta( $record_id, $field['id'], true );
+
+								if ( $option_value == $value ) {
+
+									// Count the points.
+									$rankings[ $user_id ][ $record_id ] = $points;
+								}
+							}
+						}
+					}
+				} // foreach records
+
+			} // foreach user
+
+			if ( ! isset( $rankings ) ) {
+				return array(); // No rankings.
+			}
+
+			// Add up the points.
+			foreach ( $rankings as $user_id => $records ) {
+				foreach ( $records as $record_id => $points ) {
+					$the_points[ $user_id ] = ( isset( $the_points[ $user_id ] ) ? $the_points[ $user_id ] : 0 ) + $points;
+				}
+			}
+
+			// Index the array
+			foreach ( $the_points as $user_id => $points ) {
+				$_the_points[] = array(
+					'user_id' => $user_id,
+					'points'  => $points,
+				);
+			}
+
+			/*
+			 * Ties.
+			 *
+			 * Record the ties, because below the array_flip will remove
+			 * ties for the same points because the array key will be the same.
+			 *
+			 * Here we can restore them easily.
+			 */
+			for ( $i = 0; $i < sizeof( $_the_points ); $i++ ) {
+				$prev    = isset( $_the_points[ $i - 1 ] ) ? $_the_points[ $i - 1 ] : false;
+				$current = $_the_points[ $i ];
+
+				// If the current points match the prev points, we have a tie.
+				if ( is_array( $prev ) && ( $prev['points'] === $current['points'] ) ) {
+
+					// We have a a tie, record for the previous user the points, because they will be removed.
+					$ties[ $prev['user_id'] ] = $prev['points'];
+				}
+			}
+
+			// Flip points on left side with user ID on the right (removes any ties).
+			$the_points = array_flip( $the_points );
+
+			// Sort by points in reverse order.
+			krsort( $the_points, SORT_NUMERIC );
+
+			// Send back the points and ties.
+			return array(
+				'points' => $the_points,
+				'ties'   => isset( $ties ) ? $ties : array(),
+			);
+		}
+
+		/**
+		 * A row of ladder data.
+		 *
+		 * @since  1.0.0
+		 *
+		 * @param  int $rank    The rank number.
+		 * @param  int $user_id The user ID.
+		 * @param  int $points  The points they got.
+		 */
+		private function the_row( $rank, $user_id, $points ) {
+			$user = get_userdata( $user_id ); ?>
+				<tr>
+					<td><?php echo absint( $rank ); ?></td>
+					<td><?php echo esc_html( $user->display_name ); ?></td>
+					<td><?php echo absint( $points ); ?></td>
+
+					<?php do_action( 'refuse2lose_ladder_columns' ); ?>
+				</tr>
+			<?php
+		}
+
+		public function ladder() {
+
+			// Get the rankings.
+			$data     = $this->get_rankings();
+
+			$rankings = $data['points']; // Rankings w/ ties removed.
+			$ties     = $data['ties']; // All the ties.
+
+			// Starting point for rank.
+			$rank = 1;
+
+			ob_start(); ?>
+
+				<table class="refuse2lose-ladder">
+					<thead>
+						<th><?php _e( 'Rank', 'refuse2lose' ); ?></th>
+						<th><?php _e( 'Name', 'refuse2lose' ); ?></th>
+						<th><?php _e( 'Points', 'refuse2lose' ); ?></th>
+
+						<?php do_action( 'refuse2lose_ladder_headers' ); ?>
+					</thead>
+					<tbody>
+						<?php foreach ( $rankings as $points => $user_id ) : ?>
+							<!-- Normal Rank -->
+							<?php $this->the_row( $rank, $user_id, $points ); ?>
+
+							<!-- Ties -->
+							<?php foreach ( $ties as $tied_user_id => $tied_points ) : ?>
+								<?php if ( $points == $tied_points ) : // If they got the same points as this user. ?>
+									<?php $this->the_row( $rank, $tied_user_id, $tied_points ); ?>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						<?php $rank++; endforeach; ?>
+					</tbody>
+				</table>
+
+			<?php return ob_get_clean();
 		}
 
 		/**

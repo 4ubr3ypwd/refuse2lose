@@ -61,12 +61,19 @@ if ( ! class_exists( 'Refuse2Lose_Profile_Tennis' ) ) {
 				'id'              => '_singles_doubles',
 				'type'            => 'select',
 
-				'options'         => array(
+				// The different match types.
+				'options'         => apply_filters( 'refuse2lose_tennis_match_types', array(
 					'singles'       => __( 'Singles', 'refuse2lose' ),
 					'doubles'       => __( 'Doubles', 'refuse2lose' ),
-				),
+				) ),
 
 				'required'    => 'required', // Required.
+
+				// Assign points for values of this field.
+				'points'      => apply_filters( 'refuse2lose_tennis_points', array(
+					'singles' => 2, // 2 Points for this value.
+					'doubles'  => 1, // 1 Point for this value.
+				) ),
 			) );
 
 			// Go ahead, and even modify our tennis profile.
