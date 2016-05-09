@@ -98,52 +98,35 @@ if ( ! class_exists( 'Refuse2Lose_Shortcodes' ) ) {
 				return array(); // No rankings.
 			}
 
-			// Add up the points.
-			foreach ( $rankings as $user_id => $records ) {
-				foreach ( $records as $record_id => $points ) {
-					$the_points[ $user_id ] = ( isset( $the_points[ $user_id ] ) ? $the_points[ $user_id ] : 0 ) + $points;
+			// Add the points.
+			foreach ( $rankings as $user_id => $record ) {
+				foreach ( $record as $record_id => $points ) {
+
+					// The user.
+					$user = $this->members_list[ $user_id ];
+
+					// Get the user's name.
+					$users_nicename = sanitize_title_with_dashes( $user );
+
+					/*
+					 * The organizing key is the points and the user's name.
+					 */
+					$org_key = "{$points}-{$users_nicename}";
+
+					// Add the points.
+					$the_points[ $org_key ]['points']    = $the_points[ $org_key ] + $points;
+					$the_points[ $org_key ]['user_id']   = $user_id;
 				}
 			}
 
-			// Index the array
-			foreach ( $the_points as $user_id => $points ) {
-				$_the_points[] = array(
-					'user_id' => $user_id,
-					'points'  => $points,
-				);
-			}
+			// Sort by points and users.
+			ksort( $the_points, SORT_REGULAR );
 
-			/*
-			 * Ties.
-			 *
-			 * Record the ties, because below the array_flip will remove
-			 * ties for the same points because the array key will be the same.
-			 *
-			 * Here we can restore them easily.
-			 */
-			for ( $i = 0; $i < sizeof( $_the_points ); $i++ ) {
-				$prev    = isset( $_the_points[ $i - 1 ] ) ? $_the_points[ $i - 1 ] : false;
-				$current = $_the_points[ $i ];
+			// Large points on top.
+			$the_points = array_reverse( $the_points );
 
-				// If the current points match the prev points, we have a tie.
-				if ( is_array( $prev ) && ( $prev['points'] === $current['points'] ) ) {
-
-					// We have a a tie, record for the previous user the points, because they will be removed.
-					$ties[ $prev['user_id'] ] = $prev['points'];
-				}
-			}
-
-			// Flip points on left side with user ID on the right (removes any ties).
-			$the_points = array_flip( $the_points );
-
-			// Sort by points in reverse order.
-			krsort( $the_points, SORT_NUMERIC );
-
-			// Send back the points and ties.
-			return array(
-				'points' => $the_points,
-				'ties'   => isset( $ties ) ? $ties : array(),
-			);
+			// The ranking should be sorted by points.
+			return $the_points;
 		}
 
 		/**
